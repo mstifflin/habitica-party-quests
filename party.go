@@ -8,44 +8,19 @@ import (
 	"net/http"
 )
 
+const (
+	partyMemberURL = "https://habitica.com/api/v3/groups/%s/members"
+)
+
 type partyMember struct {
 	UserName string
 	UserUUID string
 }
 
-func getPartyID(userUUID string) (string, error) {
-	resp, err := http.Get(fmt.Sprintf("https://habitica.com/api/v3/members/%s", userUUID))
-	if err != nil {
-		return "", err
-	}
-
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
-	}
-
-	data := map[string]interface{}{}
-	err = json.Unmarshal(body, &data)
-	if err != nil {
-		return "", err
-	}
-	if data["error"] != nil {
-		return "", errors.New(data["error"].(string))
-	}
-
-	partyIDInterface := parseUnmarshaledArbitraryJSON(data, []string{"data", "party", "_id"})
-	if partyID, ok := partyIDInterface.(string); ok {
-		return partyID, nil
-	}
-
-	return "", errors.New("party id not found")
-}
-
 func getPartyMembers(userUUID, apiKey, partyID string) ([]partyMember, error) {
 	client := &http.Client{}
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("https://habitica.com/api/v3/groups/%s/members", partyID), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf(partyMemberURL, partyID), nil)
 	if err != nil {
 		return nil, err
 	}
