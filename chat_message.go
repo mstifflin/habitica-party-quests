@@ -22,12 +22,13 @@ func formatPartyQuestData(
 		for _, questID := range sortedQuestKeys {
 			if questMetadata[questID].Category == category {
 				b.WriteString(fmt.Sprintf(
-					"## %s: %v\n",
+					"### %s\n\nQuanity: %v\n\n",
 					questMetadata[questID].Name, totalPartyQuests[questID],
 				))
 
-				b.WriteString("## Owners\n")
+				b.WriteString("Owners: ")
 				b.WriteString(strings.Join(questToOwnersMap[questID], ", "))
+				b.WriteString("\n")
 				b.WriteString("\n")
 			}
 		}
