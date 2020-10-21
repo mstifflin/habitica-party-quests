@@ -61,14 +61,20 @@ func main() {
 		questMetadata,
 	)
 
-	fmt.Println(message)
+	err = writePartyQuestDataToMarkdown(message)
+	if err != nil {
+		fmt.Println("error writing party quest data to md file", err.Error())
+		return
+	}
 
-	// Message too big for one chat message. lol
-	// err = sendChatMessageToParty(myUUID, apiKey, partyID, message)
-	// if err != nil {
-	// 	fmt.Println("error sending message to party", err.Error())
-	// 	return
-	// }
+	for userName, userQuests := range partyMemberToQuestInventoryMap {
+		userQuestData := formatUserQuestData(sortedQuestKeys, userName, userQuests, questMetadata)
+		err = writeUserQuestDataToMarkdown(userName, userQuestData)
+		if err != nil {
+			fmt.Println("error writing user quest data to md file", err.Error())
+			return
+		}
+	}
 
 	return
 }

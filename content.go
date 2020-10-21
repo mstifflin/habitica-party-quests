@@ -10,6 +10,16 @@ import (
 	"strings"
 )
 
+func writeUserQuestDataToMarkdown(userName string, userQuestData string) error {
+	d1 := []byte(userQuestData)
+	return ioutil.WriteFile(fmt.Sprintf("../hackintasks.github.io/%s.md", userName), d1, 0644)
+}
+
+func writePartyQuestDataToMarkdown(partyQuestData string) error {
+	d1 := []byte(partyQuestData)
+	return ioutil.WriteFile("../hackintasks.github.io/index.md", d1, 0644)
+}
+
 func formatPartyQuestData(
 	sortedQuestKeys []string,
 	totalPartyQuests map[string]int,
@@ -43,6 +53,38 @@ func formatPartyQuestData(
 	section(&builder, "World Quests", "world")
 	section(&builder, "Hourglass Quests", "timeTravelers")
 
+	builder.WriteString("\n")
+
+	return builder.String()
+}
+
+func formatUserQuestData(
+	sortedQuestKeys []string,
+	userName string,
+	userQuests map[string]int,
+	questMetadata map[string]Quest,
+) string {
+	section := func(b *strings.Builder, title string, category string) {
+		b.WriteString(fmt.Sprintf("# %s\n", title))
+		for _, questID := range sortedQuestKeys {
+			if questMetadata[questID].Category == category && userQuests[questID] > 0 {
+				b.WriteString(fmt.Sprintf(
+					"### %s\n\nQuanity: %v\n\n",
+					questMetadata[questID].Name, userQuests[questID],
+				))
+			}
+		}
+	}
+
+	builder := strings.Builder{}
+
+	section(&builder, "Pet Quests", "pet")
+	section(&builder, "Unlockable Quests", "unlockable")
+	section(&builder, "Masterclasser Quests", "gold")
+	section(&builder, "Hatching Potion Quests", "hatchingPotion")
+	section(&builder, "World Quests", "world")
+	section(&builder, "Hourglass Quests", "timeTravelers")
+
 	return builder.String()
 }
 
@@ -50,6 +92,7 @@ const (
 	partyChatURL = "https://habitica.com/api/v3/groups/%s/chat"
 )
 
+// Message too big for one chat message. lol
 func sendChatMessageToParty(userUUID, apiKey, partyID, message string) error {
 	client := &http.Client{}
 
