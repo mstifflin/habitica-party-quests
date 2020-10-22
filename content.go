@@ -41,20 +41,23 @@ func formatPartyQuestData(
 ) string {
 
 	section := func(b *strings.Builder, title string, category string) {
+
 		b.WriteString(fmt.Sprintf("# %s\n", title))
+		b.WriteString("| Quest Name | Quantity | Owners |\n")
+
 		for _, questID := range sortedQuestKeys {
 			if questMetadata[questID].Category == category {
-				b.WriteString(fmt.Sprintf(
-					"### %s\n\nQuanity: %v\n\n",
-					questMetadata[questID].Name, totalPartyQuests[questID],
-				))
 
-				b.WriteString("Owners: ")
-				b.WriteString(strings.Join(questToOwnersMap[questID], ", "))
-				b.WriteString("\n")
-				b.WriteString("\n")
+				b.WriteString(fmt.Sprintf(
+					"| %s | %v | %s |\n",
+					questMetadata[questID].Name,
+					totalPartyQuests[questID],
+					strings.Join(questToOwnersMap[questID], ", "),
+				))
 			}
 		}
+
+		b.WriteString("\n")
 	}
 
 	builder := strings.Builder{}
