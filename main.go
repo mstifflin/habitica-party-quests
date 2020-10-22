@@ -54,14 +54,19 @@ func main() {
 		return
 	}
 
-	message := formatPartyQuestData(
+	partyQuestsString := formatPartyQuestData(
 		sortedQuestKeys,
 		totalPartyQuests,
 		questToOwnersMap,
 		questMetadata,
 	)
 
-	err = writePartyQuestDataToMarkdown(message)
+	partyMemberNames := []string{}
+	for memberName := range partyMemberToQuestInventoryMap {
+		partyMemberNames = append(partyMemberNames, memberName)
+	}
+
+	err = writePartyQuestDataToMarkdown(partyMemberNames, partyQuestsString)
 	if err != nil {
 		fmt.Println("error writing party quest data to md file", err.Error())
 		return

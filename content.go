@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"sort"
 	"strings"
 )
 
@@ -15,23 +16,20 @@ func writeUserQuestDataToMarkdown(userName string, userQuestData string) error {
 	return ioutil.WriteFile(fmt.Sprintf("../hackintasks.github.io/%s.md", userName), d1, 0644)
 }
 
-func writePartyQuestDataToMarkdown(partyQuestData string) error {
-	header := `# Per User Inventory
-[Bravisha_Skietano](Bravisha_Skietano.md)
-[Celeblessil](Celeblessil.md)
-[Hed_M](Hed_M.md)
-[RexRD](RexRD.md)
-[Umbra_Star](Umbra_Star.md)
-[WolfenEmi](WolfenEmi.md)
-[becoming_tolkien](becoming_tolkien.md)
-[d34dimm0rt4l](d34dimm0rt4l.md)
-[dainty_moose](dainty_moose.md)
-[forestwood6](forestwood6.md)
-[supervxn](supervxn.md)
-[ybbm](ybbm.md)
+func writePartyQuestDataToMarkdown(users []string, partyQuestData string) error {
+	builder := strings.Builder{}
 
-`
-	d1 := []byte(header + partyQuestData)
+	sort.Slice(users, func(i, j int) bool {
+		return strings.ToLower(users[i]) < strings.ToLower(users[j])
+	})
+
+	builder.WriteString("# Per User Quests\n")
+	for _, user := range users {
+		builder.WriteString(fmt.Sprintf("- [%s](%s.md)\n", user, user))
+	}
+	builder.WriteString("\n")
+
+	d1 := []byte(builder.String() + partyQuestData)
 	return ioutil.WriteFile("../hackintasks.github.io/index.md", d1, 0644)
 }
 
