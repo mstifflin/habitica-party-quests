@@ -23,7 +23,7 @@ func writePartyQuestDataToMarkdown(users []string, partyQuestData string) error 
 		return strings.ToLower(users[i]) < strings.ToLower(users[j])
 	})
 
-	builder.WriteString("# Per User Quests\n")
+	builder.WriteString("# Per User Quests\n\n")
 	for _, user := range users {
 		builder.WriteString(fmt.Sprintf("- [%s](%s.md)\n", user, user))
 	}
@@ -42,7 +42,7 @@ func formatPartyQuestData(
 
 	section := func(b *strings.Builder, title string, category string) {
 
-		b.WriteString(fmt.Sprintf("# %s\n", title))
+		b.WriteString(fmt.Sprintf("# %s\n\n", title))
 		b.WriteString("| Quest Name | Quantity | Owners |\n")
 
 		for _, questID := range sortedQuestKeys {
